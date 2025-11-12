@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { getPlaceReviews } from "../services/reviewService";
 
 export default function ReviewsList({ placeId, refreshTrigger }) {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadReviews();
-  }, [placeId, refreshTrigger]);
-
-  const loadReviews = async () => {
+  const loadReviews = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getPlaceReviews(placeId);
@@ -19,7 +15,11 @@ export default function ReviewsList({ placeId, refreshTrigger }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [placeId]);
+
+  useEffect(() => {
+    loadReviews();
+  }, [placeId, refreshTrigger, loadReviews]);
 
   if (loading) {
     return <div className="text-center text-gray-500">Carregando avaliações...</div>;

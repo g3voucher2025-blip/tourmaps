@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { submitReview, getUserReviewForPlace } from "../services/reviewService";
 
@@ -10,13 +10,7 @@ export default function ReviewForm({ placeId, onReviewSubmitted }) {
   const [error, setError] = useState("");
   const [existingReview, setExistingReview] = useState(null);
 
-  useEffect(() => {
-    if (currentUser && placeId) {
-      loadUserReview();
-    }
-  }, [currentUser, placeId]);
-
-  const loadUserReview = async () => {
+  const loadUserReview = useCallback(async () => {
     try {
       const review = await getUserReviewForPlace(placeId, currentUser.uid);
       if (review) {
@@ -27,7 +21,13 @@ export default function ReviewForm({ placeId, onReviewSubmitted }) {
     } catch (error) {
       console.error("Erro ao carregar avaliação:", error);
     }
-  };
+  }, [placeId, currentUser]);
+
+  useEffect(() => {
+    if (currentUser && placeId) {
+      loadUserReview();
+    }
+  }, [currentUser, placeId, loadUserReview]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/authService";
 
-export const Login = () => {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,7 +18,7 @@ export const Login = () => {
       await loginUser(email, password);
       navigate("/dashboard");
     } catch (err) {
-      setError("Email ou senha incorretos");
+      setError(err.message || "Email ou senha incorretos");
     } finally {
       setLoading(false);
     }
@@ -69,4 +69,4 @@ export const Login = () => {
       </div>
     </div>
   );
-};
+}

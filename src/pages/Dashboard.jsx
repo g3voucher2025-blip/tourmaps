@@ -7,7 +7,7 @@ import TuristaDashboard from "./dashboards/TuristaDashboard";
 import EmpresaDashboard from "./dashboards/EmpresaDashboard";
 
 export const Dashboard = () => {
-  const { currentUser, userProfile } = useAuth();
+  const { userProfile } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {

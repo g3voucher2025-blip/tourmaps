@@ -1,4 +1,4 @@
-import { doc, setDoc, query, where, collection, getDocs, updateDoc, increment } from "firebase/firestore";
+import { doc, setDoc, query, where, collection, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 
 // Criar/atualizar avaliação
@@ -74,7 +74,6 @@ export const updatePlaceRating = async (placeId) => {
 export const getUserReviewForPlace = async (placeId, userId) => {
   try {
     const reviewId = `${placeId}_${userId}`;
-    const reviewDoc = await doc(db, "reviews", reviewId);
     const querySnapshot = await getDocs(query(collection(db, "reviews"), where("reviewId", "==", reviewId)));
     
     if (querySnapshot.empty) return null;
