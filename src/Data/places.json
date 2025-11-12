@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "nome": "Lagoa Maior",
+    "categoria": "Atração",
+    "latitude": -20.784224376577743,
+    "longitude": -51.71546578497755,
+    "isRegistered": true,
+    "descricao": "Praia urbana com quiosques e atividades aquáticas.",
+    "rating": 4.6
+  },
+  {
+    "id": 2,
+    "nome": "Cascalheira",
+    "categoria": "Hospedagem",
+    "latitude": -23.55,
+    "longitude": -46.635,
+    "isRegistered": false,
+    "descricao": "Hotel confortável no centro da cidade.",
+    "rating": 4.0
+  },
+  {
+    "id": 3,
+    "nome": "Museu Municipal",
+    "categoria": "Cultura",
+    "latitude": -23.551,
+    "longitude": -46.637,
+    "isRegistered": true,
+    "descricao": "Acervo histórico local e exposições temporárias.",
+    "rating": 4.8
+  },
+  {
+    "id": 4,
+    "nome": "Restaurante Raízes",
+    "categoria": "Restaurante",
+    "latitude": -23.553,
+    "longitude": -46.6365,
+    "isRegistered": true,
+    "descricao": "Culinária local com ingredientes regionais.",
+    "rating": 4.4
+  },
+  {
+    "id": 5,
+    "nome": "Centro Cultural",
+    "categoria": "Cultura",
+    "latitude": -23.5495,
+    "longitude": -46.636,
+    "isRegistered": true,
+    "descricao": "Espaço para exposições e apresentações artísticas.",
+    "rating": 4.2
+  }
+]
