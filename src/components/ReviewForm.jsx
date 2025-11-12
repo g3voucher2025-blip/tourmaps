@@ -12,22 +12,22 @@ export default function ReviewForm({ placeId, onReviewSubmitted }) {
 
   useEffect(() => {
     if (currentUser && placeId) {
+      const loadUserReview = async () => {
+        try {
+          const review = await getUserReviewForPlace(placeId, currentUser.uid);
+          if (review) {
+            setExistingReview(review);
+            setRating(review.rating);
+            setComment(review.comment);
+          }
+        } catch (error) {
+          console.error("Erro ao carregar avaliação:", error);
+        }
+      };
+
       loadUserReview();
     }
   }, [currentUser, placeId]);
-
-  const loadUserReview = async () => {
-    try {
-      const review = await getUserReviewForPlace(placeId, currentUser.uid);
-      if (review) {
-        setExistingReview(review);
-        setRating(review.rating);
-        setComment(review.comment);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar avaliação:", error);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -18,6 +18,7 @@ export const Login = () => {
       await loginUser(email, password);
       navigate("/dashboard");
     } catch (err) {
+      console.error(err);
       setError("Email ou senha incorretos");
     } finally {
       setLoading(false);
@@ -70,3 +71,5 @@ export const Login = () => {
     </div>
   );
 };
+
+  export default Login;

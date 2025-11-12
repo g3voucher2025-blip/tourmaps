@@ -250,6 +250,7 @@ export default function Mapa() {
 
       <footer>
         © {new Date().getFullYear()} TurisConecta — MVP • Desenvolvido para hackathon
+        {/* HMR test: edit to trigger hot reload */}
       </footer>
     </div>
   );

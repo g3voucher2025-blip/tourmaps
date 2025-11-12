@@ -6,20 +6,20 @@ export default function ReviewsList({ placeId, refreshTrigger }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const loadReviews = async () => {
+      try {
+        setLoading(true);
+        const data = await getPlaceReviews(placeId);
+        setReviews(data);
+      } catch (error) {
+        console.error("Erro ao carregar avaliações:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadReviews();
   }, [placeId, refreshTrigger]);
-
-  const loadReviews = async () => {
-    try {
-      setLoading(true);
-      const data = await getPlaceReviews(placeId);
-      setReviews(data);
-    } catch (error) {
-      console.error("Erro ao carregar avaliações:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return <div className="text-center text-gray-500">Carregando avaliações...</div>;
