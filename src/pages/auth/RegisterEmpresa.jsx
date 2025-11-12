@@ -14,15 +14,16 @@ export default function RegisterEmpresa() {
     cep: '',
     latitude: '',
     longitude: '',
-    categoria: '', // <-- Categoria já estava no state
+    categoria: '',
     descricao: '',
-    nomeResponsavel: '', // <-- Responsável já estava no state
+    nomeResponsavel: '',
     password: '',
     confirmPassword: '',
     isRegistered: 'false',
   });
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -32,9 +33,9 @@ export default function RegisterEmpresa() {
   };
 
   const handleSubmit = async (e) => {
-    // ... (nenhuma mudança necessária aqui)
     e.preventDefault();
     setError("");
+    setSuccess("");
 
     if (formData.password !== formData.confirmPassword) {
       setError("As senhas não coincidem");
@@ -44,13 +45,12 @@ export default function RegisterEmpresa() {
         setError("Por favor, selecione uma categoria.");
         return;
     }
+    
     setLoading(true);
 
     try {
       const { password, confirmPassword, ...additionalData } = formData;
-      
       additionalData.isRegistered = formData.isRegistered === 'true'; 
-
       additionalData.localizacao = {
           lat: parseFloat(formData.latitude || 0),
           long: parseFloat(formData.longitude || 0)
@@ -60,9 +60,14 @@ export default function RegisterEmpresa() {
 
       await registerEmpresa(formData.email, formData.password, additionalData);
 
-      alert("Empresa cadastrada com sucesso!");
-      navigate("/login");
+      setSuccess("Empresa cadastrada com sucesso! Redirecionando para o login...");
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+
     } catch (err) {
+      setLoading(false);
       if (err.code === "auth/email-already-in-use") {
         setError("Este email já está cadastrado.");
       } else if (err.code === "auth/invalid-email") {
@@ -70,11 +75,8 @@ export default function RegisterEmpresa() {
       } else {
         setError(err.message || "Ocorreu um erro ao cadastrar.");
       }
-    } finally {
-      setLoading(false);
     }
   };
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
@@ -88,23 +90,22 @@ export default function RegisterEmpresa() {
             {error}
           </div>
         )}
+        {success && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            {success}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Campos existentes */}
-          <input type="text" name="nomeEmpresa" value={formData.nomeEmpresa} onChange={handleChange} placeholder="Nome da Empresa" required className="w-full px-4 py-2 border rounded-lg" />
-          <input type="text" name="cnpj" value={formData.cnpj} onChange={handleChange} placeholder="CNPJ" required className="w-full px-4 py-2 border rounded-lg" />
-          <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required className="w-full px-4 py-2 border rounded-lg" />
-
-          {/* === NOVOS CAMPOS ADICIONADOS AQUI === */}
-
-          <input type="text" name="nomeResponsavel" value={formData.nomeResponsavel} onChange={handleChange} placeholder="Nome do Responsável" required className="w-full px-4 py-2 border rounded-lg" />
-          
-          <input type="tel" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="Telefone" required className="w-full px-4 py-2 border rounded-lg" />
-          
-          <input type="text" name="cep" value={formData.cep} onChange={handleChange} placeholder="CEP" required className="w-full px-4 py-2 border rounded-lg" />
+          <input type="text" name="nomeEmpresa" value={formData.nomeEmpresa} onChange={handleChange} placeholder="Nome da Empresa *" required className="w-full px-4 py-2 border rounded-lg" />
+          <input type="text" name="cnpj" value={formData.cnpj} onChange={handleChange} placeholder="CNPJ *" required className="w-full px-4 py-2 border rounded-lg" />
+          <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email *" required className="w-full px-4 py-2 border rounded-lg" />
+          <input type="text" name="nomeResponsavel" value={formData.nomeResponsavel} onChange={handleChange} placeholder="Nome do Responsável *" required className="w-full px-4 py-2 border rounded-lg" />
+          <input type="tel" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="Telefone *" required className="w-full px-4 py-2 border rounded-lg" />
+          <input type="text" name="cep" value={formData.cep} onChange={handleChange} placeholder="CEP *" required className="w-full px-4 py-2 border rounded-lg" />
           
           <select name="categoria" value={formData.categoria} onChange={handleChange} required className="w-full px-4 py-2 border rounded-lg text-gray-500">
-            <option value="" disabled>Selecione uma Categoria</option>
+            <option value="" disabled>Selecione uma Categoria *</option>
             <option value="restaurante">Restaurante</option>
             <option value="hotel">Hotel</option>
             <option value="ponto_turistico">Ponto Turístico</option>
@@ -112,9 +113,6 @@ export default function RegisterEmpresa() {
             <option value="outro">Outro</option>
           </select>
           
-          {/* ======================================= */}
-          
-          {/* Campo do CADASTUR */}
           <div className="p-2 border border-gray-200 rounded-lg">
             <p className="block text-sm font-medium text-gray-700 mb-2">Já possui CADASTUR?</p>
             <div className="flex items-center gap-x-6">
@@ -129,9 +127,8 @@ export default function RegisterEmpresa() {
             </div>
           </div>
           
-          {/* Campos de senha */}
-          <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Senha" required className="w-full px-4 py-2 border rounded-lg" />
-          <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="Confirme a Senha" required className="w-full px-4 py-2 border rounded-lg" />
+          <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Senha *" required className="w-full px-4 py-2 border rounded-lg" />
+          <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="Confirme a Senha *" required className="w-full px-4 py-2 border rounded-lg" />
           
           <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50">
             {loading ? 'Cadastrando...' : 'Finalizar Cadastro'}

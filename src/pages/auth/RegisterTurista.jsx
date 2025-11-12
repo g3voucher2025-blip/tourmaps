@@ -12,6 +12,7 @@ export default function RegisterTurista() {
   });
 
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -26,23 +27,21 @@ export default function RegisterTurista() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess(""); 
 
-    // Validações
     if (!formData.email || !formData.password || !formData.displayName) {
       setError("Preencha todos os campos obrigatórios");
       return;
     }
-
     if (formData.password !== formData.confirmPassword) {
       setError("As senhas não coincidem");
       return;
     }
-
     if (formData.password.length < 6) {
       setError("A senha deve ter pelo menos 6 caracteres");
       return;
     }
-
+    
     setLoading(true);
 
     try {
@@ -51,9 +50,14 @@ export default function RegisterTurista() {
         endereço: formData.endereço,
       });
 
-      alert("Cadastro realizado com sucesso!");
-      navigate("/");
+      setSuccess("Cadastro realizado com sucesso! Redirecionando para o login...");
+      
+      setTimeout(() => {
+        navigate("/login"); 
+      }, 2000);
+
     } catch (err) {
+      setLoading(false);
       if (err.code === "auth/email-already-in-use") {
         setError("Este email já está cadastrado");
       } else if (err.code === "auth/invalid-email") {
@@ -61,9 +65,7 @@ export default function RegisterTurista() {
       } else {
         setError(err.message || "Erro ao cadastrar");
       }
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   return (
@@ -81,118 +83,80 @@ export default function RegisterTurista() {
             {error}
           </div>
         )}
+        {success && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            {success}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Nome Completo */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Nome Completo *
             </label>
             <input
-              type="text"
-              name="displayName"
-              value={formData.displayName}
-              onChange={handleChange}
+              type="text" name="displayName" value={formData.displayName} onChange={handleChange}
               placeholder="Seu nome completo"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
-          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email *
             </label>
             <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
+              type="email" name="email" value={formData.email} onChange={handleChange}
               placeholder="seu.email@example.com"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
-          {/* Endereço */}
-          <div>
+           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Endereço (Opcional)
+              Endereço
             </label>
             <input
-              type="text"
-              name="endereço"
-              value={formData.endereço}
-              onChange={handleChange}
-              placeholder="Rua, número, bairro"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              type="text" name="endereço" value={formData.endereço} onChange={handleChange}
+              placeholder="Sua cidade e estado"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
-          {/* Senha */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Senha *
             </label>
             <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Mínimo 6 caracteres"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              type="password" name="password" value={formData.password} onChange={handleChange}
+              placeholder="Mínimo de 6 caracteres"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
-          {/* Confirmar Senha */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Confirmar Senha *
             </label>
             <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirme sua senha"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
+              placeholder="Repita sua senha"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
-
-          {/* Botão */}
+          
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
-            {loading ? "Cadastrando..." : "Cadastrar como Turista"}
+            {loading ? 'Cadastrando...' : 'Criar Conta'}
           </button>
         </form>
-
-        {/* Links */}
-        <div className="mt-6 text-center space-y-2">
-          <p className="text-gray-600">
-            Já tem conta?{" "}
-            <a href="/login" className="text-blue-600 hover:underline font-medium">
-              Faça login
-            </a>
-          </p>
-          <p className="text-gray-600">
-            É uma empresa?{" "}
-            <a href="/register/empresa" className="text-blue-600 hover:underline font-medium">
-              Cadastre-se como empresa
-            </a>
-          </p>
-          <p className="text-gray-600">
-            Voltar ao{" "}
-            <a href="/" className="text-blue-600 hover:underline font-medium">
-              mapa
-            </a>
-          </p>
-        </div>
       </div>
     </div>
   );

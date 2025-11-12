@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Eventos from "./pages/Eventos";
 import Login from "./pages/Login";
 import Painel from "./pages/Painel";
+import Register from "./pages/Register";
 import RegisterTurista from "./pages/auth/RegisterTurista";
 import RegisterEmpresa from "./pages/auth/RegisterEmpresa";
 
@@ -16,6 +17,9 @@ export default function App() {
           <Route path="/eventos" element={<Eventos />} />
           <Route path="/login" element={<Login />} />
           <Route path="/painel" element={<Painel />} />
+
+          {/* 2. Adicione a rota principal de registro */}
+          <Route path="/register" element={<Register />} />
 
           {/* Rotas de Registro */}
           <Route path="/register/turista" element={<RegisterTurista />} />
