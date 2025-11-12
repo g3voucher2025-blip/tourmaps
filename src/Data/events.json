@@ -1,0 +1,26 @@
+[
+  {
+    "id": 101,
+    "titulo": "Festival Gastronômico",
+    "descricao": "Comidas típicas, música e atividades para a família.",
+    "data": "2025-11-15",
+    "localNome": "Praia Central",
+    "localId": 1
+  },
+  {
+    "id": 102,
+    "titulo": "Noite de Seresta",
+    "descricao": "Apresentação de artistas locais e exposição.",
+    "data": "2025-11-20",
+    "localNome": "Museu Municipal",
+    "localId": 3
+  },
+  {
+    "id": 103,
+    "titulo": "Feira de Artesanato",
+    "descricao": "Bancas com produtos locais e oficinas.",
+    "data": "2025-11-22",
+    "localNome": "Centro",
+    "localId": null
+  }
+]

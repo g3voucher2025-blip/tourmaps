@@ -2,86 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../css/style.css"; // Certifique-se que existe
-
-const places = [
-  {
-    id: 1,
-    nome: "Praia Central",
-    categoria: "Atração",
-    latitude: -23.552,
-    longitude: -46.639,
-    isRegistered: true,
-    descricao: "Praia urbana com quiosques e atividades aquáticas.",
-    rating: 4.6,
-  },
-  {
-    id: 2,
-    nome: "Hotel Bela Vista",
-    categoria: "Hospedagem",
-    latitude: -23.55,
-    longitude: -46.635,
-    isRegistered: false,
-    descricao: "Hotel confortável no centro da cidade.",
-    rating: 4.0,
-  },
-  {
-    id: 3,
-    nome: "Museu Municipal",
-    categoria: "Cultura",
-    latitude: -23.551,
-    longitude: -46.637,
-    isRegistered: true,
-    descricao: "Acervo histórico local e exposições temporárias.",
-    rating: 4.8,
-  },
-  {
-    id: 4,
-    nome: "Restaurante Raízes",
-    categoria: "Restaurante",
-    latitude: -23.553,
-    longitude: -46.6365,
-    isRegistered: true,
-    descricao: "Culinária local com ingredientes regionais.",
-    rating: 4.4,
-  },
-  {
-    id: 5,
-    nome: "Centro Cultural",
-    categoria: "Cultura",
-    latitude: -23.5495,
-    longitude: -46.636,
-    isRegistered: true,
-    descricao: "Espaço para exposições e apresentações artísticas.",
-    rating: 4.2,
-  },
-];
-
-const events = [
-  {
-    id: 101,
-    titulo: "Festival Gastronômico",
-    descricao: "Comidas típicas, música e atividades para a família.",
-    data: "2025-11-15",
-    localNome: "Praia Central",
-    localId: 1,
-  },
-  {
-    id: 102,
-    titulo: "Noite de Seresta",
-    descricao: "Apresentação de artistas locais e exposição.",
-    data: "2025-11-20",
-    localNome: "Museu Municipal",
-    localId: 3,
-  },
-  {
-    id: 103,
-    titulo: "Feira de Artesanato",
-    descricao: "Bancas com produtos locais e oficinas.",
-    data: "2025-11-22",
-    localNome: "Centro",
-    localId: null,
-  },
-];
+import places from "../Data/places.json";
+import events from "../Data/events.json";
 
 export default function Mapa() {
   const mapRef = useRef(null);
@@ -124,7 +46,7 @@ export default function Mapa() {
     });
 
     // Inicializar o mapa
-    const cityCenter = [-23.551, -46.637];
+    const cityCenter = [-20.783853248053916, -51.711072149175365];
     const map = L.map(mapRef.current).setView(cityCenter, 15);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
