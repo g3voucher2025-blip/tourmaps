@@ -50,6 +50,12 @@ export default function RegisterEmpresa() {
 
     try {
       const { password, confirmPassword, ...additionalData } = formData;
+      
+      // Verify passwords match using destructured values
+      if (password !== confirmPassword) {
+        throw new Error("As senhas não coincidem");
+      }
+      
       additionalData.isRegistered = formData.isRegistered === 'true'; 
       additionalData.localizacao = {
           lat: parseFloat(formData.latitude || 0),
@@ -58,13 +64,12 @@ export default function RegisterEmpresa() {
       delete additionalData.latitude; 
       delete additionalData.longitude;
 
-      await registerEmpresa(formData.email, formData.password, additionalData);
+      await registerEmpresa(formData.email, password, additionalData);
 
-      setSuccess("Empresa cadastrada com sucesso! Redirecionando para o login...");
-
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      // --- INÍCIO DA ALTERAÇÃO ---
+      // Redireciona imediatamente para a página inicial após o sucesso.
+      navigate("/");
+      // --- FIM DA ALTERAÇÃO ---
 
     } catch (err) {
       setLoading(false);

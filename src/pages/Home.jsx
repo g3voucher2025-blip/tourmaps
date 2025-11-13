@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../css/style.css"; // Certifique-se que existe
@@ -97,12 +98,12 @@ export default function Mapa() {
             </div>
           </div>
           <nav>
-            <a href="mapa.html">Mapa</a>
-            <a href="eventos.html">Eventos</a>
-            <a href="cadastro.html">Cadastre-se</a>
-            <a href="login.html" className="btn">
+            <Link to="/">Mapa</Link>
+            <Link to="/eventos">Eventos</Link>
+            <Link to="/register">Cadastre-se</Link>
+            <Link to="/login" className="btn">
               Login
-            </a>
+            </Link>
           </nav>
         </div>
       </header>
@@ -216,9 +217,9 @@ export default function Mapa() {
                   }}
                 >
                   <h3 style={{ margin: 0 }}>Próximos eventos</h3>
-                  <a href="proximoseventos.html" style={{ color: "var(--accent1)", textDecoration: "none" }}>
+                  <Link to="/eventos" style={{ color: "var(--accent1)", textDecoration: "none" }}>
                     Ver todos
-                  </a>
+                  </Link>
                 </div>
                 <div className="events-row" style={{ marginTop: "12px" }}>
                   {events.map((ev) => (

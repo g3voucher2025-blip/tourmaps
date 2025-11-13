@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/authService";
+import { useAuth } from "../context/useAuth";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -8,6 +9,7 @@ export const Login = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,7 +18,15 @@ export const Login = () => {
 
     try {
       await loginUser(email, password);
-      navigate("/dashboard");
+      // Aguarda um pouco para o AuthContext processar o novo usuário
+      setTimeout(() => {
+        // Redireciona baseado no role
+        if (currentUser?.role === 'empresa') {
+          navigate("/painel");
+        } else {
+          navigate("/");
+        }
+      }, 500);
     } catch (err) {
       console.error(err);
       setError("Email ou senha incorretos");

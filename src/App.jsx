@@ -1,33 +1,64 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./context/AuthContext";
-import Layout from "./components/Layout";
-import Home from "./pages/Home";
-import Eventos from "./pages/Eventos";
-import Login from "./pages/Login";
-import Painel from "./pages/Painel";
-import Register from "./pages/Register";
-import RegisterTurista from "./pages/auth/RegisterTurista";
-import RegisterEmpresa from "./pages/auth/RegisterEmpresa";
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+
+// Importação dos Componentes e Páginas
+import Layout from './components/Layout';
+import Home from './pages/Home';
+import Eventos from './pages/Eventos';
+import Painel from './pages/Painel';
+import Perfil from './pages/Perfil';
+import Unauthorized from './pages/Unauthorized';
+
+// --- INÍCIO DA CORREÇÃO ---
+// Importando de 'pages'
+import Login from './pages/Login';
+import Register from './pages/Register';
+
+// Importando de 'pages/auth'
+import RegisterTurista from './pages/auth/RegisterTurista';
+import RegisterEmpresa from './pages/auth/RegisterEmpresa';
+// --- FIM DA CORREÇÃO ---
+
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          {/* 2. Crie uma rota pai com o componente Layout */}
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
-            <Route path="/eventos" element={<Eventos />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/painel" element={<Painel />} />
-
-            {/* 2. Adicione a rota principal de registro */}
-            <Route path="/register" element={<Register />} />
-
-            {/* Rotas de Registro */}
-            <Route path="/register/turista" element={<RegisterTurista />} />
-            <Route path="/register/empresa" element={<RegisterEmpresa />} /> {/* 2. Adicione a rota */}
+            <Route path="eventos" element={<Eventos />} />
+            
+            {/* Rotas para os componentes em 'pages' */}
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            
+            {/* Rotas para os componentes em 'pages/auth' */}
+            <Route path="register/turista" element={<RegisterTurista />} />
+            <Route path="register/empresa" element={<RegisterEmpresa />} />
+            
+            <Route path="unauthorized" element={<Unauthorized />} />
+            
+            <Route 
+              path="perfil" 
+              element={
+                <ProtectedRoute>
+                  <Perfil />
+                </ProtectedRoute>
+              } 
+            />
           </Route>
+
+          <Route 
+            path="/painel" 
+            element={
+              <ProtectedRoute allowedRoles={['empresa']}>
+                <Painel />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

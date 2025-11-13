@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { logoutUser } from "../services/authService";
 import { useNavigate } from "react-router-dom";
 import AdminDashboard from "./dashboards/AdminDashboard";

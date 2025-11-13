@@ -7,8 +7,9 @@ export default function RegisterTurista() {
     email: "",
     password: "",
     confirmPassword: "",
-    displayName: "",
-    endereço: "",
+    nome: "",
+    sobrenome: "",
+    dataNascimento: "",
   });
 
   const [error, setError] = useState("");
@@ -29,7 +30,7 @@ export default function RegisterTurista() {
     setError("");
     setSuccess(""); 
 
-    if (!formData.email || !formData.password || !formData.displayName) {
+    if (!formData.email || !formData.password || !formData.nome || !formData.sobrenome) {
       setError("Preencha todos os campos obrigatórios");
       return;
     }
@@ -46,15 +47,16 @@ export default function RegisterTurista() {
 
     try {
       await registerTurista(formData.email, formData.password, {
-        displayName: formData.displayName,
-        endereço: formData.endereço,
+        nome: formData.nome,
+        sobrenome: formData.sobrenome,
+        dataNascimento: formData.dataNascimento,
       });
 
-      setSuccess("Cadastro realizado com sucesso! Redirecionando para o login...");
-      
-      setTimeout(() => {
-        navigate("/login"); 
-      }, 2000);
+      // --- INÍCIO DA ALTERAÇÃO ---
+      // A mensagem de sucesso não é mais necessária pois o redirecionamento é imediato.
+      // A navegação acontece diretamente para a página inicial.
+      navigate("/"); 
+      // --- FIM DA ALTERAÇÃO ---
 
     } catch (err) {
       setLoading(false);
@@ -92,13 +94,35 @@ export default function RegisterTurista() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nome Completo *
+              Nome *
             </label>
             <input
-              type="text" name="displayName" value={formData.displayName} onChange={handleChange}
-              placeholder="Seu nome completo"
+              type="text" name="nome" value={formData.nome} onChange={handleChange}
+              placeholder="Seu nome"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Sobrenome *
+            </label>
+            <input
+              type="text" name="sobrenome" value={formData.sobrenome} onChange={handleChange}
+              placeholder="Seu sobrenome"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Data de Nascimento
+            </label>
+            <input
+              type="date" name="dataNascimento" value={formData.dataNascimento} onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -107,21 +131,13 @@ export default function RegisterTurista() {
               Email *
             </label>
             <input
-              type="email" name="email" value={formData.email} onChange={handleChange}
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="seu.email@example.com"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
-            />
-          </div>
-
-           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Endereço
-            </label>
-            <input
-              type="text" name="endereço" value={formData.endereço} onChange={handleChange}
-              placeholder="Sua cidade e estado"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
@@ -130,7 +146,10 @@ export default function RegisterTurista() {
               Senha *
             </label>
             <input
-              type="password" name="password" value={formData.password} onChange={handleChange}
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="Mínimo de 6 caracteres"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -142,7 +161,10 @@ export default function RegisterTurista() {
               Confirmar Senha *
             </label>
             <input
-              type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
               placeholder="Repita sua senha"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -157,6 +179,10 @@ export default function RegisterTurista() {
             {loading ? 'Cadastrando...' : 'Criar Conta'}
           </button>
         </form>
+
+        <p className="text-center mt-4 text-gray-600">
+          Já tem conta? <a href="/login" className="text-blue-600 hover:underline">Faça login</a>
+        </p>
       </div>
     </div>
   );

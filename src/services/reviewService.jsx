@@ -1,4 +1,4 @@
-import { doc, setDoc, query, where, collection, getDocs, updateDoc } from "firebase/firestore";
+import { doc, setDoc, query, where, collection, getDocs, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../config/firebase";
 
 // Criar/atualizar avaliação
@@ -74,11 +74,13 @@ export const updatePlaceRating = async (placeId) => {
 export const getUserReviewForPlace = async (placeId, userId) => {
   try {
     const reviewId = `${placeId}_${userId}`;
-    const querySnapshot = await getDocs(query(collection(db, "reviews"), where("reviewId", "==", reviewId)));
+    const docRef = doc(db, "reviews", reviewId);
+    const docSnap = await getDoc(docRef);
     
-    if (querySnapshot.empty) return null;
-    
-    return querySnapshot.docs[0].data();
+    if (docSnap.exists()) {
+      return docSnap.data();
+    }
+    return null;
   } catch (error) {
     console.error("Erro ao obter avaliação do usuário:", error);
     throw error;

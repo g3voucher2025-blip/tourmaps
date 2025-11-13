@@ -28,7 +28,6 @@ if (!isConfigValid) {
   // Example keys: VITE_FIREBASE_API_KEY=...
   // Do NOT commit your real keys to version control.
   // We intentionally don't throw here so the app can render and we can show a friendly error.
-  // eslint-disable-next-line no-console
   console.error(
     "Firebase config is missing or incomplete. Please create a .env.local with VITE_FIREBASE_API_KEY, VITE_FIREBASE_PROJECT_ID and VITE_FIREBASE_APP_ID (see .env.local.example). Firebase auth/db will be disabled until configured."
   );

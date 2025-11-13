@@ -5,6 +5,7 @@
     "descricao": "Comidas típicas, música e atividades para a família.",
     "data": "2025-11-15",
     "localNome": "Praia Central",
+    "empresaNome": "Restaurante Marina",
     "localId": 1
   },
   {
@@ -13,6 +14,7 @@
     "descricao": "Apresentação de artistas locais e exposição.",
     "data": "2025-11-20",
     "localNome": "Museu Municipal",
+    "empresaNome": "Museu da Cidade",
     "localId": 3
   },
   {
@@ -21,6 +23,7 @@
     "descricao": "Bancas com produtos locais e oficinas.",
     "data": "2025-11-22",
     "localNome": "Centro",
+    "empresaNome": "Associação de Artesãos",
     "localId": null
   }
 ]

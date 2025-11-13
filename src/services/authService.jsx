@@ -1,79 +1,19 @@
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-} from "firebase/auth";
-import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, deleteUser } from "firebase/auth";
+import { doc, setDoc, serverTimestamp, updateDoc, deleteDoc, collection, query, where, getDocs, writeBatch } from "firebase/firestore";
 import { auth, db } from "../config/firebase";
 
-
-// Registrar novo turista
-export const registerTurista = async (email, password, turistaData) => {
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    // Salvar dados do turista no Firestore
-    await setDoc(doc(db, "users", user.uid), {
-      uid: user.uid,
-      email: user.email,
-      displayName: turistaData.displayName,
-      endereço: turistaData.endereço || "",
-      role: "turista",
-      createdAt: new Date(),
-    });
-
-    return user;
-  } catch (error) {
-    console.error("Erro ao registrar turista:", error);
-    throw error;
-  }
-};
-
-// NOVA FUNÇÃO PARA CADASTRAR EMPRESA
-export const registerEmpresa = async (email, password, additionalData) => {
-  try {
-    // 1. Cria o usuário no Firebase Authentication
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    // 2. Prepara os dados para salvar no Firestore
-    const empresaData = {
-      ...additionalData, // Todos os dados do formulário (nome, CNPJ, etc.)
-      uid: user.uid,
-      email: user.email,
-      role: 'empresa', // Define o papel do usuário como 'empresa'
-      ratingsCount: 0,
-      ratingsSum: 0,
-      avgRating: 0,
-      createdAt: serverTimestamp()
-    };
-
-    // 3. Salva o perfil completo no Firestore, na coleção 'users'
-    // Usando o UID do usuário como ID do documento para fácil acesso.
-    await setDoc(doc(db, "users", user.uid), empresaData);
-
-    return userCredential;
-  } catch (error) {
-    console.error("Erro ao registrar empresa: ", error);
-    // Re-lança o erro para que o componente possa tratá-lo (e mostrar na tela)
-    throw error;
-  }
-};
-
-// Login
+// --- Função de Login ---
 export const loginUser = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return userCredential.user;
+    return userCredential;
   } catch (error) {
     console.error("Erro ao fazer login:", error);
     throw error;
   }
 };
 
-// Logout
+// --- Função de Logout ---
 export const logoutUser = async () => {
   try {
     await signOut(auth);
@@ -83,21 +23,127 @@ export const logoutUser = async () => {
   }
 };
 
-// Obter dados do usuário
-export const getUserProfile = async (uid) => {
+// --- Função de Cadastro de Turista ---
+export const registerTurista = async (email, password, additionalData) => {
   try {
-    const userDoc = await getDoc(doc(db, "users", uid));
-    if (userDoc.exists()) {
-      return userDoc.data();
-    }
-    return null;
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Criar displayName a partir de nome + sobrenome
+    const displayName = `${additionalData.nome || ''} ${additionalData.sobrenome || ''}`.trim();
+
+    await updateProfile(user, {
+      displayName: displayName
+    });
+
+    await setDoc(doc(db, "users", user.uid), {
+      ...additionalData,
+      uid: user.uid,
+      email: user.email,
+      displayName,
+      createdAt: serverTimestamp()
+    });
+
+    return userCredential;
   } catch (error) {
-    console.error("Erro ao obter perfil:", error);
+    console.error("Erro ao registrar turista: ", error);
     throw error;
   }
 };
 
-// Monitorar autenticação
-export const onAuthStateChangeListener = (callback) => {
-  return onAuthStateChanged(auth, callback);
+// --- Função de Cadastro de Empresa ---
+export const registerEmpresa = async (email, password, additionalData) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    await updateProfile(user, { 
+      displayName: additionalData.nomeEmpresa 
+    });
+
+    const { nomeEmpresa, ...firestoreData } = additionalData;
+
+    await setDoc(doc(db, "empresas", user.uid), {
+      ...firestoreData,
+      nomeEmpresa, // Include extracted nomeEmpresa
+      uid: user.uid,
+      email: user.email,
+      ratingsCount: 0,
+      ratingsSum: 0,
+      avgRating: 0,
+      createdAt: serverTimestamp()
+    });
+    return userCredential;
+  } catch (error) {
+    console.error("Erro ao registrar empresa: ", error);
+    throw error;
+  }
+};
+
+// --- FUNÇÃO DE ATUALIZAÇÃO DE PERFIL (NOVA) ---
+export const updateUserProfile = async (uid, role, dataToUpdate) => {
+  const collectionName = role === 'empresa' ? 'empresas' : 'users';
+  const docRef = doc(db, collectionName, uid);
+
+  try {
+    // Atualiza o documento no Firestore
+    await updateDoc(docRef, dataToUpdate);
+
+    // Se o nome principal foi alterado, atualiza também no perfil de autenticação do Firebase
+    const newDisplayName = role === 'empresa' ? dataToUpdate.nomeEmpresa : dataToUpdate.displayName;
+    if (newDisplayName && auth.currentUser && auth.currentUser.displayName !== newDisplayName) {
+      await updateProfile(auth.currentUser, {
+        displayName: newDisplayName
+      });
+    }
+
+  } catch (error) {
+    console.error("Erro ao atualizar o perfil:", error);
+    throw error;
+  }
+};
+ // --- FUNÇÃO DE EXCLUSÃO DE CONTA (REESCRITA E MAIS SEGURA) ---
+export const deleteEmpresaAccount = async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error("Nenhum usuário autenticado para excluir.");
+  }
+
+  const uid = user.uid; // Salva o UID antes que o objeto 'user' se torne inválido
+
+  try {
+    // --- NOVA ORDEM DE OPERAÇÕES ---
+
+    // 1. PRIMEIRO, tenta apagar o usuário da autenticação. Esta é a operação mais crítica.
+    // Se falhar, a função para aqui e nada no banco de dados é alterado.
+    await deleteUser(user);
+
+    // 2. Se a etapa 1 funcionou, o usuário foi apagado da autenticação.
+    // Agora, limpamos os dados do Firestore.
+
+    // A. Encontra e apaga todos os eventos associados a esta empresa.
+    const eventosRef = collection(db, 'eventos');
+    const q = query(eventosRef, where("createdBy", "==", uid));
+    const querySnapshot = await getDocs(q);
+    
+    // Usa um 'batch' para apagar todos os eventos de uma vez, o que é mais eficiente.
+    const batch = writeBatch(db);
+    querySnapshot.forEach((doc) => {
+      batch.delete(doc.ref);
+    });
+    await batch.commit();
+
+    // B. Apaga o documento principal da empresa na coleção 'empresas'.
+    const docRef = doc(db, 'empresas', uid);
+    await deleteDoc(docRef);
+
+  } catch (error) {
+    console.error("Erro ao excluir a conta da empresa:", error);
+    if (error.code === 'auth/requires-recent-login') {
+      // Esta é a mensagem de erro mais provável e importante para o usuário.
+      throw new Error("Esta operação é sensível e requer login recente. Por favor, faça login novamente e tente excluir a conta.");
+    }
+    // Lança outros erros que possam ocorrer.
+    throw error;
+  }
 };
